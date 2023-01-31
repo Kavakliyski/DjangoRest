@@ -5,31 +5,21 @@
 import json
 from django.http import JsonResponse
 
+from products.models import Product
+
 
 def api_home(request, *args, **kwargs):
 
     print(request.GET)  # urls query params
     print(request.POST)
-    
-    # take the request and turn it into a py dict
-    body = request.body
+
+    model_data = Product.objects.all().order_by("?").first()
     data = {}
 
-    try:
-        data = json.loads(body)
-    except:
-        pass
+    if model_data:
+        data['id'] = model_data.id
+        data['title'] = model_data.title
+        data['content'] = model_data.content
+        data['price'] = model_data.price
 
-    print(data)
-    # print(data.keys())
-
-    # data['headers'] = request.headers
-    # data['conent_type'] = request.conent_type
-    print(request.headers)
-    data['params'] = dict(request.GET)
-    data['headers'] = dict(request.headers)
-
-    return JsonResponse(
-        # {'message:': 'Django Response'}
-        data
-    )
+    return JsonResponse(data)
